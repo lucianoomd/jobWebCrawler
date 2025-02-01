@@ -51,6 +51,6 @@ function webCrawlJobs() {
 }
 
 cron.schedule(String(process.env.CRON_EXPRESSION), () => {
-	console.log("running a task every day 12PM and 12AM");
+	console.log(`running a task ${process.env.CRON_EXPRESSION}`);
 	webCrawlJobs();
 });
