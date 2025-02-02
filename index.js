@@ -13,11 +13,11 @@ function sendEmail() {
 		},
 	});
 
-	var mailOptions = {
+	const mailOptions = {
 		from: process.env.EMAIL_FROM,
 		to: process.env.EMAIL_TO,
-		subject: "VAGA NOVA DE RN NA AGILE ENGINE",
-		text: `Abriu vaga nova na Agile Engine ${process.env.URL_JOBS}`,
+		subject: "NEW REACT NATIVE JOB IN AGILE ENGINE",
+		text: `There is a new React Native job in Agile Engine: ${process.env.EMAIL_URL_JOBS}`,
 	};
 
 	transporter.sendMail(mailOptions, function (error, info) {
@@ -31,7 +31,7 @@ function sendEmail() {
 
 function webCrawlJobs() {
 	axios
-		.get("https://www.join.agileengine.com/open-positions/")
+		.get(process.env.URL_JOBS)
 		.then((response) => {
 			const $ = cheerio.load(response.data);
 			const data = $(".awsm-job-post-title").text().split("\n");
@@ -40,6 +40,8 @@ function webCrawlJobs() {
 					item.toLowerCase().includes("react") &&
 					item.toLowerCase().includes("native")
 			);
+			console.log("========== webCrawlJobs ==========");
+			console.log("Date: ", new Date());
 			if (array.length) {
 				sendEmail();
 				cron.getTasks().forEach((item) => item.stop);
@@ -51,6 +53,6 @@ function webCrawlJobs() {
 }
 
 cron.schedule(String(process.env.CRON_EXPRESSION), () => {
-	console.log(`running a task ${process.env.CRON_EXPRESSION}`);
+	console.log(`Running task with schedule: ${process.env.CRON_EXPRESSION}`);
 	webCrawlJobs();
 });
